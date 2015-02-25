@@ -19,6 +19,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 #include <errno.h>
 #include <unistd.h>
@@ -55,11 +56,16 @@ int main ( int argc, char *argv[] )
 		string reply3 = client_chan.send_request("data Jane Smith");
 		cout << "Reply to request 'data Jane Smith' is '" << reply3 << "'" << endl;
 
+		struct timeval time_start, time_end;
 		for(int i = 0; i < 100; i++)
 		{
-		    string request_string("data TestPerson" + int2string(i));
-		    string reply_string = client_chan.send_request(request_string);
-			cout << "reply to request " << i << ":" << reply_string << endl;;
+			string request_string("data TestPerson" + int2string(i));
+			gettimeofday(&time_start, NULL);
+			string reply_string = client_chan.send_request(request_string);
+			gettimeofday(&time_end, NULL);
+			cout << "\nTime to request: " << (time_end.tv_usec - time_start.tv_usec) << " microseconds" << endl;
+			// cout << "Time to request " << i << ": " << double(clock() - time_start) << endl;
+			// cout << "reply to request " << i << ":" << reply_string << endl;
 		}
 
 		string reply4 = client_chan.send_request("quit");
